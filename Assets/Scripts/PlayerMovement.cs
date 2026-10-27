@@ -11,6 +11,10 @@ public class PlayerMovement : MonoBehaviour
     public float stretchAmount = 0.2f;
     public float stretchSpeed = 10f;
 
+    [Header("Dash Visual")]
+    public float dashStretchAmount = 0.6f;
+    public float dashStretchSpeed = 20f;
+
     [Header("Movement Particles")]
     public ParticleSystem movementParticles;
     public float particleOffset = 0.35f;
@@ -20,8 +24,10 @@ public class PlayerMovement : MonoBehaviour
     public float screenMargin = 0.02f;
 
     private Rigidbody2D rb;
+    private PlayerDash dash;
     private Vector2 movement;
     private Vector3 originalScale;
+    private Quaternion originalRotation;
 
     private Camera mainCamera;
     private float playerHalfWidth;
@@ -32,14 +38,15 @@ public class PlayerMovement : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        dash = GetComponent<PlayerDash>();
         mainCamera = Camera.main;
 
         if (visual != null)
         {
             originalScale = visual.localScale;
+            originalRotation = visual.localRotation;
         }
 
-        // Obtener el tamaño visible del cuadrado.
         SpriteRenderer spriteRenderer = visual != null
             ? visual.GetComponent<SpriteRenderer>()
             : GetComponent<SpriteRenderer>();
@@ -60,7 +67,6 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        // Preparar las partículas sin emitir al iniciar.
         if (movementParticles != null)
         {
             emission = movementParticles.emission;
@@ -75,11 +81,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        // Leer el movimiento horizontal y vertical.
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
-
-        // Evitar mayor velocidad al moverse en diagonal.
         movement = movement.normalized;
 
         UpdateVisual();
@@ -91,26 +94,51 @@ public class PlayerMovement : MonoBehaviour
         if (visual == null)
             return;
 
-        Vector3 targetScale = originalScale;
+        Vector2 direction = Vector2.zero;
+        float amount = 0f;
+        float visualSpeed = stretchSpeed;
 
-        // Deformar el cuadrado según la dirección.
-        if (movement.sqrMagnitude > 0.01f)
+        if (dash != null && dash.IsDashing)
         {
-            float horizontal = Mathf.Abs(movement.x);
-            float vertical = Mathf.Abs(movement.y);
-
-            targetScale.x *=
-                1f + stretchAmount * (horizontal - vertical);
-
-            targetScale.y *=
-                1f + stretchAmount * (vertical - horizontal);
+            direction = dash.DashDirection.normalized;
+            amount = dashStretchAmount;
+            visualSpeed = dashStretchSpeed;
+        }
+        else if (movement.sqrMagnitude > 0.01f)
+        {
+            direction = movement.normalized;
+            amount = stretchAmount;
         }
 
-        // Suavizar la deformación.
+        Vector3 targetScale = originalScale;
+        Quaternion targetRotation = originalRotation;
+
+        if (direction.sqrMagnitude > 0.01f)
+        {
+            // Orientar el cubo hacia la dirección del movimiento.
+            float angle = Mathf.Atan2(
+                direction.y,
+                direction.x
+            ) * Mathf.Rad2Deg;
+
+            targetRotation = Quaternion.Euler(0f, 0f, angle);
+
+            // Estirar en la dirección del movimiento
+            // y estrechar el eje perpendicular.
+            targetScale.x *= 1f + amount;
+            targetScale.y *= Mathf.Max(0.1f, 1f - amount * 0.6f);
+        }
+
+        visual.localRotation = Quaternion.Slerp(
+            visual.localRotation,
+            targetRotation,
+            visualSpeed * Time.deltaTime
+        );
+
         visual.localScale = Vector3.Lerp(
             visual.localScale,
             targetScale,
-            stretchSpeed * Time.deltaTime
+            visualSpeed * Time.deltaTime
         );
     }
 
@@ -121,7 +149,6 @@ public class PlayerMovement : MonoBehaviour
 
         bool isMoving = movement.sqrMagnitude > 0.01f;
 
-        // Detener la emisión cuando el jugador está quieto.
         if (!isMoving)
         {
             emission.rateOverTime = 0f;
@@ -137,7 +164,6 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        // Situar el emisor en el lado opuesto al movimiento.
         Vector3 oppositeDirection = new Vector3(
             -movement.x,
             -movement.y,
@@ -150,9 +176,7 @@ public class PlayerMovement : MonoBehaviour
         emission.rateOverTime = emissionRate;
 
         if (!movementParticles.isPlaying)
-        {
             movementParticles.Play();
-        }
     }
 
     private void FixedUpdate()
@@ -160,20 +184,28 @@ public class PlayerMovement : MonoBehaviour
         if (rb == null)
             return;
 
-        // Aplicar el movimiento.
+        if (dash != null && dash.IsDashing)
+            return;
+
         rb.linearVelocity = movement * speed;
 
         if (mainCamera == null || !mainCamera.orthographic)
             return;
 
-        // Calcular el área visible de la cámara.
+        rb.position = ClampToScreen(rb.position);
+    }
+
+    private Vector2 ClampToScreen(Vector2 position)
+    {
+        if (mainCamera == null || !mainCamera.orthographic)
+            return position;
+
         float cameraHeight = mainCamera.orthographicSize;
         float cameraWidth = cameraHeight * mainCamera.aspect;
 
         float cameraX = mainCamera.transform.position.x;
         float cameraY = mainCamera.transform.position.y;
 
-        // Dejar todo el cuadrado dentro de la pantalla.
         float minX = cameraX - cameraWidth
             + playerHalfWidth + screenMargin;
 
@@ -186,13 +218,9 @@ public class PlayerMovement : MonoBehaviour
         float maxY = cameraY + cameraHeight
             - playerHalfHeight - screenMargin;
 
-        // Limitar la posición del jugador.
-        Vector2 position = rb.position;
-
         position.x = Mathf.Clamp(position.x, minX, maxX);
         position.y = Mathf.Clamp(position.y, minY, maxY);
 
-        rb.position = position;
+        return position;
     }
 }
-
