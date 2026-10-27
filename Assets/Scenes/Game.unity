@@ -5003,8 +5003,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 5
   visual: {fileID: 1667936212}
-  stretchAmount: 0.2
+  stretchAmount: 0.1
   stretchSpeed: 10
+  dashStretchAmount: 0.8
+  dashStretchSpeed: 20
   movementParticles: {fileID: 67951540}
   particleOffset: 0.35
   emissionRate: 35
@@ -5094,8 +5096,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73fc1f38d499aff43b63b75ac59e3cac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dashSpeed: 20
-  dashDistance: 2.5
+  dashSpeed: 15
+  dashDistance: 1.5
+  dashCooldown: 0.1
   rb: {fileID: 453530849}
   playerCollider: {fileID: 453530850}
   obstacleLayer:
