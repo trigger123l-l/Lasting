@@ -60,7 +60,7 @@ public class PlayerHealth : MonoBehaviour
         {
             livesText.text = isDead
                 ? "GAME OVER"
-                : "LIVES: " + currentLives + "/" + maxLives;
+                : "LIVES: " + currentLives;
         }
     }
 

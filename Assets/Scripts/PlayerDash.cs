@@ -8,7 +8,7 @@ public class PlayerDash : MonoBehaviour
     public float dashSpeed = 15f;
     public float dashDistance = 2.5f;
     public float dashCooldown = 0.1f;
-    public float dashProtectionAfterDash = 0.2f;
+    public float dashProtectionAfterDash = 0f;
 
     [Header("References")]
     public Rigidbody2D rb;

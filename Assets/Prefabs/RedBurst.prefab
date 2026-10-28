@@ -148,13 +148,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daa0c9b494b85e04cada496a84cda672, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  warningDuration: 1.5
-  activeDuration: 0.25
+  warningDuration: 2
+  activeDuration: 0.3
   spikePrefab: {fileID: 2847665531452475793, guid: fecbee881d9aed34589768fe5d538d4b, type: 3}
   minSpikeCount: 20
-  maxSpikeCount: 50
-  spikeSpeed: 10
-  spikeLifetime: 7
+  maxSpikeCount: 35
+  spikeSpeed: 15
+  spikeLifetime: 8
 --- !u!114 &5177214794102949745
 MonoBehaviour:
   m_ObjectHideFlags: 0
