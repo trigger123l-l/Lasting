@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerHealth : MonoBehaviour
 {
     [Header("Health")]
-    public int maxLives = 4;
+    public int maxLives = 5;
     public float invulnerabilityDuration = 0.35f;
 
     [Header("UI")]
