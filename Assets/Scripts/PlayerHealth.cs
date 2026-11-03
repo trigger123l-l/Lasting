@@ -1,7 +1,5 @@
 
 using TMPro;
-
-using TMPro;
 using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
@@ -15,6 +13,9 @@ public class PlayerHealth : MonoBehaviour
 
     [Header("Survival Timer")]
     public SurvivalTimer survivalTimer;
+
+    [Header("Music")]
+    public AudioSource musicSource;
 
     private int currentLives;
     private float invulnerabilityTimer;
@@ -77,6 +78,11 @@ public class PlayerHealth : MonoBehaviour
         if (survivalTimer != null)
         {
             survivalTimer.FinishTimer(false);
+        }
+
+        if (musicSource != null)
+        {
+            musicSource.Stop();
         }
 
         Time.timeScale = 0f;
