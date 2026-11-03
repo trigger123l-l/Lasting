@@ -81,7 +81,6 @@ public class Ray : MonoBehaviour
         StartCoroutine(RayRoutine());
     }
 
-
     private IEnumerator RayRoutine()
     {
         isActive = true;
@@ -126,33 +125,9 @@ public class Ray : MonoBehaviour
             1f, 0f, 0f, activeAlpha
         );
 
-        CheckPlayerOverlap();
-
         yield return new WaitForSeconds(activeDuration);
 
         Destroy(gameObject);
-    }
-
-
-    private void CheckPlayerOverlap()
-    {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-
-        if (player == null)
-            return;
-
-        Collider2D playerCollider =
-            player.GetComponent<Collider2D>();
-
-        if (playerCollider != null &&
-            rayCollider.bounds.Intersects(playerCollider.bounds))
-        {
-            PlayerHealth health =
-                player.GetComponent<PlayerHealth>();
-
-            if (health != null)
-                health.TakeDamage();
-        }
     }
 
     private void OnTriggerStay2D(Collider2D other)
@@ -164,7 +139,7 @@ public class Ray : MonoBehaviour
             return;
 
         PlayerHealth health =
-            other.GetComponent<PlayerHealth>();
+            other.GetComponentInParent<PlayerHealth>();
 
         if (health != null)
             health.TakeDamage();

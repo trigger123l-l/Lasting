@@ -35,6 +35,14 @@ public class PlayerHealth : MonoBehaviour
         if (invulnerabilityTimer > 0f)
         {
             invulnerabilityTimer -= Time.deltaTime;
+
+            if (isDead && Input.GetKeyDown(KeyCode.R))
+            {
+                Time.timeScale = 1f;
+                UnityEngine.SceneManagement.SceneManager.LoadScene(
+                    UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex
+                );
+            }
         }
     }
 

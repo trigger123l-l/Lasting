@@ -104,7 +104,7 @@ public class PlayerDash : MonoBehaviour
         if (Time.time < nextDashTime)
             return;
 
-        // No iniciar el Dash dentro de un obstáculo.
+        // No iniciar el Dash dentro de otros obstáculos.
         if (IsInsideObstacle(rb.position))
             return;
 
@@ -232,8 +232,14 @@ public class PlayerDash : MonoBehaviour
 
         foreach (Collider2D obstacle in obstacles)
         {
-            if (obstacle != null && obstacle != playerCollider)
-                return true;
+            if (obstacle == null || obstacle == playerCollider)
+                continue;
+
+            // Permitir iniciar el Dash dentro del Expanding Circle.
+            if (obstacle.GetComponentInParent<ExpandingCircle>() != null)
+                continue;
+
+            return true;
         }
 
         return false;

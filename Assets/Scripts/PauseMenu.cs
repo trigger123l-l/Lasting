@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 public class PauseMenu : MonoBehaviour
 {
     public GameObject pausePanel;
+    public AudioSource musicSource;
+
     private bool isPaused;
 
     private void Start()
@@ -30,6 +32,11 @@ public class PauseMenu : MonoBehaviour
         pausePanel.SetActive(true);
         Time.timeScale = 0f;
         isPaused = true;
+
+        if (musicSource != null)
+        {
+            musicSource.Pause();
+        }
     }
 
     public void ResumeGame()
@@ -37,6 +44,11 @@ public class PauseMenu : MonoBehaviour
         pausePanel.SetActive(false);
         Time.timeScale = 1f;
         isPaused = false;
+
+        if (musicSource != null)
+        {
+            musicSource.UnPause();
+        }
     }
 
     public void ExitToMenu()
