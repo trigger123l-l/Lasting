@@ -1,5 +1,7 @@
 
 using TMPro;
+
+using TMPro;
 using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
@@ -10,6 +12,9 @@ public class PlayerHealth : MonoBehaviour
 
     [Header("UI")]
     public TMP_Text livesText;
+
+    [Header("Survival Timer")]
+    public SurvivalTimer survivalTimer;
 
     private int currentLives;
     private float invulnerabilityTimer;
@@ -68,6 +73,11 @@ public class PlayerHealth : MonoBehaviour
     {
         isDead = true;
         UpdateLivesUI();
+
+        if (survivalTimer != null)
+        {
+            survivalTimer.FinishTimer(false);
+        }
 
         Time.timeScale = 0f;
 
