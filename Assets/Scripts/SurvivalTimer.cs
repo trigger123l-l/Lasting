@@ -5,10 +5,13 @@ using UnityEngine;
 public class SurvivalTimer : MonoBehaviour
 {
     [Header("Settings")]
-    public float survivalGoal = 55f * 60f + 30f;
+    public float survivalGoal = 3330f;
 
     [Header("UI")]
     public TMP_Text survivalText;
+
+    [Header("References")]
+    public PlayerHealth playerHealth;
 
     private float elapsedTime;
     private bool isFinished;
@@ -29,6 +32,17 @@ public class SurvivalTimer : MonoBehaviour
             return;
 
         elapsedTime += Time.deltaTime;
+
+        if (elapsedTime >= survivalGoal)
+        {
+            elapsedTime = survivalGoal;
+            FinishTimer(true);
+
+            if (playerHealth != null)
+            {
+                playerHealth.WinGame();
+            }
+        }
     }
 
     public void FinishTimer(bool won)
@@ -43,7 +57,7 @@ public class SurvivalTimer : MonoBehaviour
             survivalText.gameObject.SetActive(true);
 
             survivalText.text = won
-                ? "YOU SURVIVED: " + FormatTime(elapsedTime)
+                ? "YOU WIN\nSURVIVED: " + FormatTime(elapsedTime)
                 : "SURVIVED: " + FormatTime(elapsedTime);
         }
 

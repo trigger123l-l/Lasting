@@ -20,6 +20,7 @@ public class PlayerHealth : MonoBehaviour
     private int currentLives;
     private float invulnerabilityTimer;
     private bool isDead;
+    private bool hasWon;
 
     public bool IsDead => isDead;
 
@@ -39,7 +40,7 @@ public class PlayerHealth : MonoBehaviour
 
     public bool TakeDamage()
     {
-        if (isDead || invulnerabilityTimer > 0f)
+        if (isDead || hasWon || invulnerabilityTimer > 0f)
             return false;
 
         PlayerDash dash = GetComponentInParent<PlayerDash>();
@@ -64,9 +65,12 @@ public class PlayerHealth : MonoBehaviour
     {
         if (livesText != null)
         {
-            livesText.text = isDead
-                ? "GAME OVER"
-                : "LIVES: " + currentLives;
+            if (hasWon)
+                livesText.text = "YOU WIN";
+            else if (isDead)
+                livesText.text = "GAME OVER";
+            else
+                livesText.text = "LIVES: " + currentLives;
         }
     }
 
@@ -88,5 +92,23 @@ public class PlayerHealth : MonoBehaviour
         Time.timeScale = 0f;
 
         Debug.Log("GAME OVER: el jugador se quedó sin vidas.");
+    }
+
+    public void WinGame()
+    {
+        if (isDead || hasWon)
+            return;
+
+        hasWon = true;
+        UpdateLivesUI();
+
+        if (musicSource != null)
+        {
+            musicSource.Stop();
+        }
+
+        Time.timeScale = 0f;
+
+        Debug.Log("YOU WIN: el jugador sobrevivió 55:30.");
     }
 }
